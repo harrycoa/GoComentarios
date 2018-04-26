@@ -1,0 +1,6 @@
+# Carpetas a ignorar
+.idea
+
+# Ejecutables
+gocomments
+gocomments.exe

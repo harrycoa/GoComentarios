@@ -2,9 +2,10 @@ package modelos
 
 import (
 	"github.com/jinzhu/gorm"
-//	_ "github.com/jinzhu/gorm/dialects/sqlite"
+	//	_ "github.com/jinzhu/gorm/dialects/sqlite"
 )
 
+// Usuario user del sistema
 type Usuario struct {
 	gorm.Model
 	NombreUsuario       string        `json:"nombreUsuario" gorm:"not null; unique"`

@@ -24,6 +24,7 @@ git status
 git add .
 git commit
 // poner el comentario
+esc
 :wq
 
 7. agregar el master

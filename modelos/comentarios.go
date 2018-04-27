@@ -2,6 +2,7 @@ package modelos
 
 import "github.com/jinzhu/gorm"
 
+// Comentarios del sistema
 type Comentarios struct {
 	gorm.Model
 	IDUsuario uint   `json:"idUsuario"`

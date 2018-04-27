@@ -1,24 +1,24 @@
 package configuracion
 
 import (
-	"os"
-	"log"
 	"encoding/json"
+	"fmt"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/jinzhu/gorm"
-	"fmt"
+	"log"
+	"os"
 )
 
 // Estructura que mapeara la funcion de nuestro archivo json
 type Configuracion struct {
-	Server string
-	Port string
-	User string
+	Server   string
+	Port     string
+	User     string
 	Password string
 	Database string
 }
 
-func GetConfiguracion() Configuracion{
+func GetConfiguracion() Configuracion {
 	var c Configuracion
 	// abrir archivo json
 	file, err := os.Open("./config.json")
@@ -35,11 +35,12 @@ func GetConfiguracion() Configuracion{
 	return c
 }
 
+// GetConexion obtiene una conexion a la bd
 func GetConexion() *gorm.DB {
 	c := GetConfiguracion()
 	// url de conexion
 	// user:password@tcp(server:port)/database?charset=utf8&parseTime=True&loc=local
-	dsn := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=utf8&parseTime=True&loc=Local", c.User,c.Password,c.Server,c.Port,c.Database)
+	dsn := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=utf8&parseTime=True&loc=Local", c.User, c.Password, c.Server, c.Port, c.Database)
 	db, err := gorm.Open("mysql", dsn)
 	if err != nil {
 		log.Fatal(err)

@@ -2,6 +2,7 @@ package modelos
 
 import "github.com/jinzhu/gorm"
 
+// Voto permite controlar que un usuario solo vote una  unica vez por cada comentario
 type Voto struct {
 	gorm.Model
 	ComentarioID uint `json:"comentarioID" gorm:"not null"`

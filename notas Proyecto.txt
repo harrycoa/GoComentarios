@@ -1,0 +1,37 @@
+1. crear directorio de go en github
+-- go/src/github.com/golang
+mkdir NombreDirectorio
+
+2. entrar a directorio
+cd NombreDirectorio
+
+3. copiar el codigo creado en github.com
+echo "# GoComentarios" >> README.md
+git init
+git add README.md
+git commit -m "first commit"
+git remote add origin https://github.com/harrycoa/GoComentarios.git
+git push -u origin master
+
+
+4. verificar ruta
+pwd
+
+5. ver estado del proyecto
+git status
+
+6. agregar el comit en consola bash
+git add .
+git commit
+// poner el comentario
+:wq
+
+7. agregar el master
+git push origin master
+
+// hasta aqui se tiene preparado el proyecto
+8. instalar el orm
+go get -u github.com/jinzhu/gorm
+
+9. instalar paquete jwt
+go get github.com/dgrijalva/jwt-go

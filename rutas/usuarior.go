@@ -1,14 +1,20 @@
 package rutas
 
 import (
-	//"github.com/gorilla/mux"
-	//"github.com/urfave/negroni"
-	// "github.com/gola"
-
 	"github.com/gorilla/mux"
+	"github.com/golang/GoComentarios/controladores"
+	"github.com/urfave/negroni"
 )
+// SetUserRouter ruta para el registro de usuario
 func SetUserRouter(router *mux.Router){
 	prefix := "/api/users"
 	subRouter := mux.NewRouter().PathPrefix(prefix).Subrouter().StrictSlash(true)
-	subRouter.HandleFunc("/", Control)
+	subRouter.HandleFunc("/", controladores.CrearUsuario).Methods("POST")
+
+	router.PathPrefix(prefix).Handler(
+		negroni.New(
+			// negroni.HandlerFunc(controladores.ValidarToken)
+			negroni.Wrap(subRouter),
+		),
+	)
 }

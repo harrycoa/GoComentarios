@@ -3,9 +3,9 @@ package main
 import (
 	"flag"
 	"github.com/golang/GoComentarios/migracion"
-	"log"
 	"github.com/golang/GoComentarios/rutas"
 	"github.com/urfave/negroni"
+	"log"
 	"net/http"
 )
 
@@ -27,7 +27,7 @@ func main() {
 
 	// inicia el servidor
 	servidor := &http.Server{
-		Addr: ":9000",
+		Addr:    ":9000",
 		Handler: n,
 	}
 	log.Println("iniciando el servidor en http://localhost:9000")

@@ -1,20 +1,20 @@
 package controladores
 
 import (
-	"net/http"
-	"github.com/golang/GoComentarios/modelos"
-	"encoding/json"
-	"fmt"
-	"github.com/golang/GoComentarios/configuracion"
+	"crypto/md5"
 	"crypto/sha256"
 	"encoding/base64"
+	"encoding/json"
+	"fmt"
 	"github.com/golang/GoComentarios/comun"
+	"github.com/golang/GoComentarios/configuracion"
+	"github.com/golang/GoComentarios/modelos"
 	"log"
-	"crypto/md5"
+	"net/http"
 )
 
 // Login es el controlador de login
-func Login(w http.ResponseWriter, r *http.Request){
+func Login(w http.ResponseWriter, r *http.Request) {
 	usuario := modelos.Usuario{}
 	// mapear los datos
 	err := json.NewDecoder(r.Body).Decode(&usuario)
@@ -28,7 +28,10 @@ func Login(w http.ResponseWriter, r *http.Request){
 
 	// encriptando contraseña con sha 256
 	c := sha256.Sum256([]byte(usuario.Contrasenia))
+	// otra forma
 	pwd := base64.URLEncoding.EncodeToString(c[:32])
+	// pwd := fmt.Sprintf("%x", c)
+
 	// mapeando el resultado
 	db.Where("email = ? and contrasenia = ?", usuario.Email, pwd).First(&usuario)
 	if usuario.ID > 0 {
@@ -43,14 +46,15 @@ func Login(w http.ResponseWriter, r *http.Request){
 	} else {
 		// enviaremos a traves de un json si no esta autorizado
 		m := modelos.Mensaje{
-			Mensaje: "usuario o clave no valido",
+			Mensaje:      "usuario o clave no valido",
 			CodigoEstado: http.StatusUnauthorized,
 		}
-		comun.MonitoreoMensajes(w , m)
+		comun.MonitoreoMensajes(w, m)
 	}
 }
+
 // CrearUsuario permite registrar usuarios
-func CrearUsuario(w http.ResponseWriter, r *http.Request){
+func CrearUsuario(w http.ResponseWriter, r *http.Request) {
 	// al estar sin parametros se incrusta con sus valores por defecto
 	usuario := modelos.Usuario{}
 	m := modelos.Mensaje{}
@@ -76,7 +80,7 @@ func CrearUsuario(w http.ResponseWriter, r *http.Request){
 	// codificando en md5 el email
 	picmd5 := md5.Sum([]byte(usuario.Email))
 	picstr := fmt.Sprintf("%x", picmd5)
-	usuario.Imagen = "https://gravatar.com/avatar/"+ picstr + "?s=100"
+	usuario.Imagen = "https://gravatar.com/avatar/" + picstr + "?s=100"
 
 	// crear una conexion para guardar el usuario
 	db := configuracion.GetConexion()

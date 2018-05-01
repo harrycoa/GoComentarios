@@ -2,10 +2,10 @@ package comun
 
 import (
 	"crypto/rsa"
-	"io/ioutil"
-	"log"
 	jwt "github.com/dgrijalva/jwt-go"
 	"github.com/golang/GoComentarios/modelos"
+	"io/ioutil"
+	"log"
 )
 
 var (

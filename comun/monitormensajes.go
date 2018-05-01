@@ -8,8 +8,8 @@ import (
 )
 
 // MonitoreoMensajes devuelve un mensaje al cliente
-func MonitoreoMensajes(w http.ResponseWriter, m modelos.Mensaje){
-	j,err := json.Marshal(m)
+func MonitoreoMensajes(w http.ResponseWriter, m modelos.Mensaje) {
+	j, err := json.Marshal(m)
 	if err != nil {
 		log.Fatalf("error al convertir el mensaje a json: %s", err)
 	}

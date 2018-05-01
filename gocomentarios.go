@@ -4,6 +4,9 @@ import (
 	"flag"
 	"github.com/golang/GoComentarios/migracion"
 	"log"
+	"github.com/golang/GoComentarios/rutas"
+	"github.com/urfave/negroni"
+	"net/http"
 )
 
 func main() {
@@ -15,6 +18,21 @@ func main() {
 		migracion.Migrar()
 		log.Println("finalizo la migracion ...")
 	}
+	// inicia las rutas
+	router := rutas.InitRoutes()
+
+	// inicia los middlewares
+	n := negroni.Classic()
+	n.UseHandler(router)
+
+	// inicia el servidor
+	servidor := &http.Server{
+		Addr: ":9000",
+		Handler: n,
+	}
+	log.Println("iniciando el servidor en http://localhost:9000")
+	log.Println(servidor.ListenAndServe())
+	log.Println("finalizo la ejecucion del programa")
 }
 
 // ./gocomentarios --migrate yes

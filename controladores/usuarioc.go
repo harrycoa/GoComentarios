@@ -3,7 +3,6 @@ package controladores
 import (
 	"crypto/md5"
 	"crypto/sha256"
-	"encoding/base64"
 	"encoding/json"
 	"fmt"
 	"github.com/golang/GoComentarios/comun"
@@ -29,11 +28,12 @@ func Login(w http.ResponseWriter, r *http.Request) {
 	// encriptando contraseña con sha 256
 	c := sha256.Sum256([]byte(usuario.Contrasenia))
 	// otra forma
-	pwd := base64.URLEncoding.EncodeToString(c[:32])
-	// pwd := fmt.Sprintf("%x", c)
+	// pwd := base64.URLEncoding.EncodeToString(c[:32])
+	 pwd := fmt.Sprintf("%x", c)
 
 	// mapeando el resultado
 	db.Where("email = ? and contrasenia = ?", usuario.Email, pwd).First(&usuario)
+	 log.Println(usuario.ID, pwd)
 	if usuario.ID > 0 {
 		usuario.Contrasenia = ""
 		token := comun.GenerateJWT(usuario)

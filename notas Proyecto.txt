@@ -36,3 +36,18 @@ go get -u github.com/jinzhu/gorm
 
 9. instalar paquete jwt
 go get github.com/dgrijalva/jwt-go
+
+10. instalar llaves
+openssl genrsa -out /Users/harry/go/src/github.com/golang/GoComentarios/llaves/private.rsa 1024
+o
+ubicarse en llaves
+openssl genrsa -out ./private.rsa 1024
+
+11. llave publica
+openssl rsa -in ./private.rsa -pubout > ./public.rsa
+
+
+12. ejecutar aplicacion
+go build gocomentarios.go
+./gocomentarios
+

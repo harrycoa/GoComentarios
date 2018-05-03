@@ -13,7 +13,10 @@ import (
 // CrearComentario crea un comentario
 func CrearComentario(w http.ResponseWriter, r *http.Request){
 	comentario := modelos.Comentarios{}
+	usuario := modelos.Usuario{}
 	m := modelos.Mensaje{}
+
+	usuario, _ = r.Context().Value("usuario").(modelos.Usuario)
 	err := json.NewDecoder(r.Body).Decode(&comentario)
 	if err != nil {
 		m.CodigoEstado = http.StatusBadRequest
@@ -21,6 +24,9 @@ func CrearComentario(w http.ResponseWriter, r *http.Request){
 		comun.MonitoreoMensajes(w ,m)
 		return
 	}
+	comentario.IDUsuario = usuario.ID
+
+
 	db := configuracion.GetConexion()
 	defer db.Close()
 	// crear el registro
@@ -41,9 +47,9 @@ func ListarComentarios(w http.ResponseWriter, r *http.Request) {
 	comentarios := []modelos.Comentarios{}
 	m := modelos.Mensaje{}
 	usuario := modelos.Usuario{}
-	// voto := modelos.Voto{}
+	voto := modelos.Voto{}
 
-	r.Context().Value(&usuario)
+	usuario, _ = r.Context().Value("usuario").(modelos.Usuario)
 	vars := r.URL.Query()
 
 	db := configuracion.GetConexion()
@@ -71,6 +77,29 @@ func ListarComentarios(w http.ResponseWriter, r *http.Request) {
 
 	// ejecutamos la consulta
 	cComentario.Find(&comentarios)
+	// recorrer el slice
+
+	for i := range comentarios {
+
+		db.Model(&comentarios[i]).Related(&comentarios[i].Usuarios)
+		comentarios[i].Usuarios[0].Contrasenia = ""
+		// buscar comentarios hijos utilizando la funcion listar hijos
+		comentarios[i].Hijos = listarHijos(comentarios[i].ID)
+		// se busca el voto del usuario en sesion
+		voto.ComentarioID = comentarios[i].ID
+		voto.UsuarioID = usuario.ID
+		// almacenamos si existe registros
+		count := db.Where(&voto).Find(&voto).RowsAffected
+		if count > 0 {
+			if voto.Valor {
+				comentarios[i].CantVotos = 1
+			} else {
+				comentarios[i].CantVotos = -1
+			}
+		}
+	}
+
+
 	// buscamos la informacion del usuario que comento
 	// devolvemos en json
 	j, err := json.Marshal(comentarios)
@@ -91,7 +120,15 @@ func ListarComentarios(w http.ResponseWriter, r *http.Request) {
 		comun.MonitoreoMensajes(w,m)
 	}
 
-
-	// --- /api/comment/?order=votes&idlimit=10
-
 }
+func listarHijos(id uint) (hijos []modelos.Comentarios){
+	db := configuracion.GetConexion()
+	defer db.Close()
+	db.Where("id_padre = ?", id).Find(&hijos)
+	for i := range hijos {
+		db.Model(&hijos[i]).Related(&hijos[i].Usuarios)
+		hijos[i].Usuarios[0].Contrasenia = ""
+	}
+	return
+}
+

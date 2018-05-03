@@ -9,8 +9,19 @@ import (
 	"github.com/golang/GoComentarios/configuracion"
 	"strconv"
 	"log"
+	"github.com/olahol/melody"
+	//"github.com/gorilla/websocket"
+	"golang.org/x/net/websocket"
 )
+
+// Melody permite utilizar realtime
+var Melody *melody.Melody
 // CrearComentario crea un comentario
+
+func init(){
+	Melody = melody.New()
+}
+
 func CrearComentario(w http.ResponseWriter, r *http.Request){
 	comentario := modelos.Comentarios{}
 	usuario := modelos.Usuario{}
@@ -37,6 +48,28 @@ func CrearComentario(w http.ResponseWriter, r *http.Request){
 		comun.MonitoreoMensajes(w ,m)
 		return
 	}
+
+	db.Model(&comentario).Related(&comentario.Usuarios)
+	comentario.Usuarios[0].Contrasenia = ""
+
+	j, err := json.Marshal(&comentario)
+	if err != nil {
+		m.Mensaje = fmt.Sprintf("no se pudo convertir el comentario a json %s", err)
+		m.CodigoEstado = http.StatusInternalServerError
+		comun.MonitoreoMensajes(w, m)
+		return
+	}
+	origin := fmt.Sprintf("http://localhost:%d/", comun.Port)
+	url := fmt.Sprintf("ws://localhost:%d/ws", comun.Port)
+	ws, err := websocket.Dial(url, "", origin)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	if _, err := ws.Write(j); err != nil {
+		log.Fatal(err)
+	}
+
 	m.CodigoEstado = http.StatusCreated
 	m.Mensaje = "Comentario creado con exito"
 	comun.MonitoreoMensajes(w, m)
